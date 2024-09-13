@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import Navbar from "../components/Navbar/page";
 import Footer from "../components/Footer/page";
+import { Suspense } from "react";
 
 // Define the ReportType interface
 interface ReportType {
@@ -30,7 +31,7 @@ interface ReportType {
 }
 
 // The ReportDetailsContent component
-const ReportDetailsContent = () => {
+const ReportDetailsContent: React.FC = () => {
   const [report, setReport] = useState<ReportType | null>(null);
   const [reviewer, setReviewer] = useState<string>("");
   const [reviewerContact, setReviewerContact] = useState<string>("");
@@ -320,4 +321,16 @@ const ReportDetailsContent = () => {
   );
 };
 
-export default ReportDetailsContent;
+const ReportDetailsPage = () => (
+  <Suspense
+    fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-bars loading-lg"></span>
+      </div>
+    }
+  >
+    <ReportDetailsContent />
+  </Suspense>
+);
+
+export default ReportDetailsPage;
