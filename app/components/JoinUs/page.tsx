@@ -109,9 +109,9 @@ const VolunteerRegistration: React.FC = () => {
               onSubmit={handleSubmit}
               className="bg-white p-6 sm:p-8 shadow-lg rounded-lg"
             >
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-black font-semibold mb-2">
                     নাম
                   </label>
                   <input
@@ -120,13 +120,13 @@ const VolunteerRegistration: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="আপনার নাম লিখুন"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-black0 font-semibold mb-2">
                     ঠিকানা
                   </label>
                   <input
@@ -135,13 +135,13 @@ const VolunteerRegistration: React.FC = () => {
                     value={formData.address}
                     onChange={handleChange}
                     placeholder="আপনার ঠিকানা লিখুন"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-black font-semibold mb-2">
                     কলেজ / বিশ্ববিদ্যালয়
                   </label>
                   <input
@@ -150,13 +150,13 @@ const VolunteerRegistration: React.FC = () => {
                     value={formData.collegeOrUniversity}
                     onChange={handleChange}
                     placeholder="আপনার কলেজ বা বিশ্ববিদ্যালয় লিখুন"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-black font-semibold mb-2">
                     বয়স
                   </label>
                   <input
@@ -165,13 +165,13 @@ const VolunteerRegistration: React.FC = () => {
                     value={formData.age}
                     onChange={handleChange}
                     placeholder="আপনার বয়স লিখুন"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white"
                     required
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block text-gray-700 font-semibold mb-2">
+                <div>
+                  <label className="block text-black font-semibold mb-2">
                     যোগাযোগ নম্বর
                   </label>
                   <input
@@ -180,7 +180,7 @@ const VolunteerRegistration: React.FC = () => {
                     value={formData.contactNumber}
                     onChange={handleChange}
                     placeholder="আপনার যোগাযোগ নম্বর লিখুন"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white"
                     required
                   />
                 </div>

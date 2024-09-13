@@ -98,7 +98,7 @@ const ReportPage = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-xl mx-auto mt-8 px-4 sm:px-6 lg:px-8 text-black bg-white min-h-screen">
         <h1 className="text-2xl font-bold mb-4 text-center">রিপোর্ট করুন</h1>
         <form onSubmit={handleSubmit} className="space-y-4 mb-5">
           <div>
@@ -111,7 +111,7 @@ const ReportPage = () => {
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 setSelectedUnion(e.target.value)
               }
-              className="block w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="block w-full mt-1 p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             >
               <option value="">ইউনিয়ন নির্বাচন করুন</option>
@@ -137,7 +137,7 @@ const ReportPage = () => {
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setContactNumber(e.target.value)
               }
-              className="block w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="block w-full mt-1 p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
           </div>
@@ -153,7 +153,7 @@ const ReportPage = () => {
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setTitle(e.target.value)
               }
-              className="block w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="block w-full mt-1 p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
           </div>
@@ -168,7 +168,7 @@ const ReportPage = () => {
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                 setDescription(e.target.value)
               }
-              className="block w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="block w-full mt-1 p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
               rows={4}
               required
             />
@@ -184,7 +184,7 @@ const ReportPage = () => {
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setImage(e.target.files ? e.target.files[0] : null)
               }
-              className="block w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="block w-full mt-1 p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 

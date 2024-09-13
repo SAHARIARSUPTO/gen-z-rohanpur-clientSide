@@ -1,20 +1,19 @@
-"use client"; // Mark this component as a Client Component
-
-import React from "react";
-import { useParams } from "next/navigation"; // Import useParams instead of useRouter
+"use client";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
-import Image from "next/image";
 import {
   FaCheckCircle,
   FaTimesCircle,
   FaEye,
   FaEyeSlash,
 } from "react-icons/fa";
+import Image from "next/image";
 import Navbar from "../components/Navbar/page";
 import Footer from "../components/Footer/page";
 
+// Define the ReportType interface
 interface ReportType {
   _id: string;
   title: string;
@@ -23,47 +22,46 @@ interface ReportType {
   upazila: string;
   union: string;
   description: string;
+  imageLink?: string;
   reportDateTime: string;
   reviewed: boolean;
-  solveStatus: boolean;
+  solveStatus?: "solved" | "unsolved";
   solveReason?: string;
-  imageLink: string;
 }
 
-const ReportDetailsPage: React.FC = () => {
-  const { id } = useParams(); // Use useParams to get the dynamic route parameter
-  const [report, setReport] = React.useState<ReportType | null>(null);
-  const [reviewer, setReviewer] = React.useState("");
-  const [reviewerContact, setReviewerContact] = React.useState("");
-  const [solver, setSolver] = React.useState("");
-  const [solverContact, setSolverContact] = React.useState("");
+// The ReportDetailsContent component
+const ReportDetailsContent = () => {
+  const [report, setReport] = useState<ReportType | null>(null);
+  const [reviewer, setReviewer] = useState<string>("");
+  const [reviewerContact, setReviewerContact] = useState<string>("");
+  const [solver, setSolver] = useState<string>("");
+  const [solverContact, setSolverContact] = useState<string>("");
+  const searchParams = useSearchParams();
 
-  React.useEffect(() => {
-    if (id) {
-      const fetchReport = async () => {
-        try {
-          const response = await axios.get(
-            `https://genz-rohanpur-server.vercel.app/reports/${id}`
-          );
-          setReport(response.data);
-        } catch (error) {
-          console.error("Error fetching report details:", error);
-        }
-      };
-      fetchReport();
-    }
-  }, [id]);
+  useEffect(() => {
+    const fetchReportDetails = async () => {
+      const reportId = searchParams.get("id");
 
-  if (!report) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <span className="loading loading-bars loading-lg"></span>
-      </div>
-    );
-  }
+      if (!reportId) {
+        console.error("No report ID in query parameters");
+        return;
+      }
+
+      try {
+        const response = await axios.get<ReportType>(
+          `https://genz-rohanpur-server.vercel.app/reports/${reportId}`
+        );
+        setReport(response.data);
+      } catch (error) {
+        console.error("Error fetching report details:", error);
+      }
+    };
+
+    fetchReportDetails();
+  }, [searchParams]);
 
   const handleReview = async () => {
-    if (!reviewer || !reviewerContact) {
+    if (!report || !reviewer || !reviewerContact) {
       Swal.fire({
         title: "Validation Error",
         text: "Please fill out all fields before reviewing the report.",
@@ -73,17 +71,19 @@ const ReportDetailsPage: React.FC = () => {
     }
 
     try {
-      const reviewData = { reviewer, reviewerContact };
-      const response = await axios.put(
+      await axios.put(
         `https://genz-rohanpur-server.vercel.app/reports/${report._id}/review`,
-        reviewData
+        {
+          reviewer,
+          reviewerContact,
+        }
       );
       Swal.fire({
         title: "Reviewed!",
-        text:
-          response.data.message || "Report marked as reviewed successfully.",
+        text: "Report marked as reviewed successfully.",
         icon: "success",
       });
+      setReport({ ...report, reviewed: true });
     } catch (error) {
       console.error("Error marking report as reviewed:", error);
       Swal.fire({
@@ -95,7 +95,7 @@ const ReportDetailsPage: React.FC = () => {
   };
 
   const handleSolve = async () => {
-    if (!solver || !solverContact) {
+    if (!report || !solver || !solverContact) {
       Swal.fire({
         title: "Validation Error",
         text: "Please fill out all fields before solving the report.",
@@ -105,16 +105,19 @@ const ReportDetailsPage: React.FC = () => {
     }
 
     try {
-      const solveData = { solver, solverContact };
-      const response = await axios.put(
+      await axios.put(
         `https://genz-rohanpur-server.vercel.app/reports/${report._id}/solve`,
-        solveData
+        {
+          solver,
+          solverContact,
+        }
       );
       Swal.fire({
         title: "Solved!",
-        text: response.data.message || "Report marked as solved successfully.",
+        text: "Report marked as solved successfully.",
         icon: "success",
       });
+      setReport({ ...report, solveStatus: "solved" });
     } catch (error) {
       console.error("Error marking report as solved:", error);
       Swal.fire({
@@ -126,6 +129,8 @@ const ReportDetailsPage: React.FC = () => {
   };
 
   const handleUnsolve = async () => {
+    if (!report) return;
+
     const { value: reason } = await Swal.fire({
       title: "Provide Reason for Unsolve",
       input: "text",
@@ -136,17 +141,18 @@ const ReportDetailsPage: React.FC = () => {
 
     if (reason) {
       try {
-        const unsolveData = { reason };
-        const response = await axios.put(
+        await axios.put(
           `https://genz-rohanpur-server.vercel.app/reports/${report._id}/unsolve`,
-          unsolveData
+          {
+            reason,
+          }
         );
         Swal.fire({
           title: "Unsolved!",
-          text:
-            response.data.message || "Report marked as unsolved successfully.",
+          text: "Report marked as unsolved successfully.",
           icon: "warning",
         });
+        setReport({ ...report, solveStatus: "unsolved", solveReason: reason });
       } catch (error) {
         console.error("Error marking report as unsolved:", error);
         Swal.fire({
@@ -158,10 +164,19 @@ const ReportDetailsPage: React.FC = () => {
     }
   };
 
+  // If the report is not available yet, show a loading spinner
+  if (!report) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-bars loading-lg"></span>
+      </div>
+    );
+  }
+
   return (
     <>
       <Navbar />
-      <section className="bg-[#e8f0f2] py-16 min-h-screen">
+      <section className="bg-[#e8f0f2] py-16 min-h-screen text-black">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-red-600 text-center mb-12">
             অভিযোগের শিরোনামঃ {report.title}
@@ -170,13 +185,13 @@ const ReportDetailsPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="mb-4">
-                  <strong>বিভাগঃ </strong> {report.division}
+                  <strong>বিভাগঃ রাজশাহী</strong> {report.division}
                 </p>
                 <p className="mb-4">
-                  <strong>জেলাঃ </strong> {report.district}
+                  <strong>জেলাঃ চাঁপাইনবাবগঞ্জ</strong> {report.district}
                 </p>
                 <p className="mb-4">
-                  <strong>উপজেলাঃ </strong> {report.upazila}
+                  <strong>উপজেলাঃ গোমস্তাপুর</strong> {report.upazila}
                 </p>
                 <p className="mb-4">
                   <strong>ইউনিয়ন/এলাকাঃ </strong> {report.union}
@@ -218,7 +233,7 @@ const ReportDetailsPage: React.FC = () => {
               </div>
               <div className="flex items-center mb-4">
                 <strong className="mr-2">সলভঃ </strong>
-                {report.solveStatus ? (
+                {report.solveStatus === "solved" ? (
                   <FaCheckCircle className="text-green-500 text-xl" />
                 ) : (
                   <FaTimesCircle className="text-red-500 text-xl" />
@@ -228,13 +243,14 @@ const ReportDetailsPage: React.FC = () => {
                 <p className="mt-4">
                   <strong>
                     রিপোর্টটি ইতমধ্যে কেউ একজন সলভ করার চেষ্টা করেছিলেন এবং
-                    পরবর্তিতে অন্যকেউ আনসলভ করেছেন । আনসলভের কারণঃ ।{" "}
+                    পরবর্তিতে অন্যকেউ আনসলভ করেছেন । আনসলভের কারণঃ
                   </strong>{" "}
                   {report.solveReason}
                 </p>
               )}
             </div>
             <div className="mt-6">
+              {/* Review button conditional rendering */}
               {!report.reviewed && (
                 <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center">
                   <input
@@ -243,7 +259,7 @@ const ReportDetailsPage: React.FC = () => {
                     placeholder="আপনার নাম লিখুন"
                     value={reviewer}
                     onChange={(e) => setReviewer(e.target.value)}
-                    className="input input-bordered w-full md:max-w-xs"
+                    className="input input-bordered w-full md:max-w-xs bg-white"
                   />
                   <input
                     type="text"
@@ -251,40 +267,49 @@ const ReportDetailsPage: React.FC = () => {
                     required
                     value={reviewerContact}
                     onChange={(e) => setReviewerContact(e.target.value)}
-                    className="input input-bordered w-full md:max-w-xs"
+                    className="input input-bordered w-full md:max-w-xs bg-white"
                   />
-                  <button onClick={handleReview} className="btn btn-primary">
-                    রিভিউ করুন
+                  <button
+                    onClick={handleReview}
+                    className="btn btn-primary w-full md:w-auto"
+                  >
+                    Mark as Reviewed
                   </button>
                 </div>
               )}
-              {report.solveStatus && !report.solveReason && (
-                <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center">
+
+              {/* Solve/Unsolve buttons conditional rendering */}
+              {report.solveStatus !== "solved" && (
+                <div className="flex flex-col gap-4 md:flex-row md:items-center">
                   <input
                     type="text"
                     required
-                    placeholder="সলভার নাম"
+                    placeholder="আপনার নাম লিখুন"
                     value={solver}
                     onChange={(e) => setSolver(e.target.value)}
-                    className="input input-bordered w-full md:max-w-xs"
+                    className="input input-bordered w-full md:max-w-xs bg-white"
                   />
                   <input
                     type="text"
-                    placeholder="সলভার যোগাযোগ নম্বর"
+                    placeholder="আপনার যোগাযোগ নম্বর লিখুন"
                     required
                     value={solverContact}
                     onChange={(e) => setSolverContact(e.target.value)}
-                    className="input input-bordered w-full md:max-w-xs"
+                    className="input input-bordered w-full md:max-w-xs bg-white"
                   />
-                  <button onClick={handleSolve} className="btn btn-success">
-                    সমাধান করুন
+                  <button
+                    onClick={handleSolve}
+                    className="btn btn-success w-full md:w-auto"
+                  >
+                    Mark as Solved
+                  </button>
+                  <button
+                    onClick={handleUnsolve}
+                    className="btn btn-warning w-full md:w-auto"
+                  >
+                    Mark as Unsolved
                   </button>
                 </div>
-              )}
-              {report.solveStatus && report.solveReason && (
-                <button onClick={handleUnsolve} className="btn btn-warning">
-                  পুনরায় আনসলভ করুন
-                </button>
               )}
             </div>
           </div>
@@ -295,4 +320,4 @@ const ReportDetailsPage: React.FC = () => {
   );
 };
 
-export default ReportDetailsPage;
+export default ReportDetailsContent;

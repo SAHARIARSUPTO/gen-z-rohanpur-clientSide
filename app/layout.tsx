@@ -12,16 +12,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="text-black">
       <head>
-        {/* Add Noto Sans Bengali font link from Google Fonts */}
         <link
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap"
           rel="stylesheet"
         />
       </head>
       <body
-        style={{ fontFamily: "'Noto Sans Bengali', sans-serif" }} // Apply Noto Sans Bengali font globally
+        style={{
+          fontFamily: "'Noto Sans Bengali', sans-serif",
+          color: "inherit", // Use inherited color
+        }}
       >
         {children}
       </body>

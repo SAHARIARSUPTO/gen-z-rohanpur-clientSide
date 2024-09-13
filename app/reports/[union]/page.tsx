@@ -65,7 +65,7 @@ const UnionReportsPage: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#f9f9f9] py-16 min-h-screen relative">
+    <section className="bg-[#f9f9f9] py-16 min-h-screen relative text-black">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-[#dc2626] text-center mb-12">
           {decodeURIComponent(Array.isArray(union) ? union[0] : union || "")}{" "}
